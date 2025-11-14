@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { BRAND } from '../lib/brand'
 
@@ -22,108 +22,92 @@ function Navbar() {
   )
 }
 
-function Gallery({ images = [] }) {
+function FullWidthCarousel({ images = [] }) {
   const list = images.length ? images : [
     'https://images.unsplash.com/photo-1505692794403-34d4982dc1f3?q=80&w=1600&auto=format&fit=crop',
     'https://images.unsplash.com/photo-1505691938895-1758d7feb511?q=80&w=1600&auto=format&fit=crop',
     'https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6?q=80&w=1600&auto=format&fit=crop',
-    'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?q=80&w=1600&auto=format&fit=crop'
+    'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?q=80&w=1600&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1501183638710-841dd1904471?q=80&w=1600&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1449844908441-8829872d2607?q=80&w=1600&auto=format&fit=crop'
   ]
 
-  const [current, setCurrent] = useState(0)
-  const [open, setOpen] = useState(false)
+  const [index, setIndex] = useState(0)
+  const [isHovering, setIsHovering] = useState(false)
+  const timerRef = useRef(null)
 
-  const prev = useCallback(() => setCurrent(c => (c - 1 + list.length) % list.length), [list.length])
-  const next = useCallback(() => setCurrent(c => (c + 1) % list.length), [list.length])
+  const prev = () => setIndex((i) => (i - 1 + list.length) % list.length)
+  const next = () => setIndex((i) => (i + 1) % list.length)
 
   useEffect(() => {
-    if (!open) return
-    const onKey = (e) => {
-      if (e.key === 'Escape') setOpen(false)
-      if (e.key === 'ArrowLeft') prev()
-      if (e.key === 'ArrowRight') next()
+    if (isHovering || list.length <= 1) return
+    timerRef.current = setInterval(() => {
+      setIndex((i) => (i + 1) % list.length)
+    }, 4000)
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current)
     }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [open, prev, next])
+  }, [isHovering, list.length])
 
+  // full-bleed container
   return (
-    <div className="w-full">
-      {/* Grid principal */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-        <div className="md:col-span-2 rounded-2xl overflow-hidden aspect-[16/10] bg-gray-100 relative group">
+    <section
+      className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen select-none"
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+    >
+      <div className="relative">
+        {/* Main image */}
+        <div className="relative aspect-[16/9] sm:aspect-[21/9] md:aspect-[16/6] bg-black">
           <img
-            src={list[current]}
-            alt={`Imagen ${current + 1}`}
+            src={list[index]}
+            alt={`Imagen ${index + 1}`}
             className="h-full w-full object-cover"
-            onClick={() => setOpen(true)}
           />
-          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-between p-3 pointer-events-none">
-            <button aria-label="Anterior" onClick={(e)=>{e.stopPropagation(); prev()}} className="pointer-events-auto h-10 w-10 rounded-full bg-white/80 hover:bg-white shadow flex items-center justify-center">‹</button>
-            <button aria-label="Siguiente" onClick={(e)=>{e.stopPropagation(); next()}} className="pointer-events-auto h-10 w-10 rounded-full bg-white/80 hover:bg-white shadow flex items-center justify-center">›</button>
+
+          {/* Controls */}
+          <button
+            aria-label="Anterior"
+            onClick={prev}
+            className="absolute left-3 top-1/2 -translate-y-1/2 h-10 w-10 md:h-12 md:w-12 rounded-full bg-white/80 hover:bg-white shadow flex items-center justify-center"
+          >
+            ‹
+          </button>
+          <button
+            aria-label="Siguiente"
+            onClick={next}
+            className="absolute right-3 top-1/2 -translate-y-1/2 h-10 w-10 md:h-12 md:w-12 rounded-full bg-white/80 hover:bg-white shadow flex items-center justify-center"
+          >
+            ›
+          </button>
+
+          {/* Counter */}
+          <div className="absolute bottom-3 right-3 text-xs md:text-sm px-2.5 py-1.5 rounded-full bg-black/60 text-white">
+            {index + 1} / {list.length}
           </div>
-          <div className="absolute bottom-3 right-3">
-            <button onClick={() => setOpen(true)} className="rounded-full bg-white/90 hover:bg-white px-3 py-1 text-sm shadow">Ver a pantalla completa</button>
-          </div>
-        </div>
-        <div className="grid grid-cols-3 md:grid-cols-1 gap-3">
-          {list.slice(0, 3).map((src, i) => {
-            const idx = i < current ? i : (i === 0 && current > 2 ? current - 1 : i)
-            // Para simplificar, mostramos las 3 primeras o menos si hay pocas
-            return (
-              <button
-                key={`${src}-${i}`}
-                className={`rounded-2xl overflow-hidden aspect-[4/3] bg-gray-100 border ${current===i? 'border-black/30' : 'border-transparent'} focus:outline-none`}
-                onClick={() => setCurrent(i)}
-                aria-label={`Miniatura ${i+1}`}
-              >
-                <img src={list[i+1] || list[i]} alt={`thumb-${i}`} className="h-full w-full object-cover" />
-              </button>
-            )
-          })}
         </div>
       </div>
 
-      {/* Tiras de miniaturas adicionales */}
+      {/* Thumbnails row */}
       {list.length > 1 && (
-        <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
-          {list.map((src, i) => (
-            <button
-              key={`thumb-${i}`}
-              className={`relative h-16 w-24 rounded-lg overflow-hidden border ${current===i ? 'border-[3px]' : 'border-black/10'}`}
-              style={current===i ? { borderColor: BRAND.primary } : {}}
-              onClick={() => setCurrent(i)}
-              aria-label={`Seleccionar imagen ${i+1}`}
-            >
-              <img src={src} alt={`mini-${i}`} className="h-full w-full object-cover" />
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* Modal fullscreen */}
-      {open && (
-        <div className="fixed inset-0 z-[60] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setOpen(false)}>
-          <div className="absolute top-4 right-4 flex items-center gap-2">
-            <button onClick={(e)=>{e.stopPropagation(); setOpen(false)}} className="rounded-full bg-white/90 hover:bg-white h-10 w-10 flex items-center justify-center shadow" aria-label="Cerrar">✕</button>
-          </div>
-          <button aria-label="Anterior" onClick={(e)=>{e.stopPropagation(); prev()}} className="absolute left-4 md:left-8 h-10 w-10 md:h-12 md:w-12 rounded-full bg-white/80 hover:bg-white shadow flex items-center justify-center">‹</button>
-          <img src={list[current]} alt={`Fullscreen ${current+1}`} className="max-h-[85vh] max-w-[90vw] object-contain rounded-xl shadow-2xl" onClick={(e)=>e.stopPropagation()} />
-          <button aria-label="Siguiente" onClick={(e)=>{e.stopPropagation(); next()}} className="absolute right-4 md:right-8 h-10 w-10 md:h-12 md:w-12 rounded-full bg-white/80 hover:bg-white shadow flex items-center justify-center">›</button>
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-            {list.map((_, i) => (
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="-mt-4 md:-mt-6" />
+          <div className="relative flex gap-2 overflow-x-auto pb-2">
+            {list.map((src, i) => (
               <button
-                key={`dot-${i}`}
-                className={`h-2.5 w-2.5 rounded-full ${i===current ? '' : 'opacity-50'}`}
-                style={{ backgroundColor: BRAND.primary }}
-                onClick={(e)=>{e.stopPropagation(); setCurrent(i)}}
+                key={`thumb-${i}`}
+                onClick={() => setIndex(i)}
+                className={`relative h-16 w-24 md:h-20 md:w-32 rounded-lg overflow-hidden border transition-all ${i===index ? 'border-[3px] scale-[0.98]' : 'border-black/10 hover:opacity-90'}`}
+                style={i===index ? { borderColor: BRAND.primary } : {}}
                 aria-label={`Ir a imagen ${i+1}`}
-              />
+              >
+                <img src={src} alt={`Miniatura ${i+1}`} className="h-full w-full object-cover" />
+              </button>
             ))}
           </div>
         </div>
       )}
-    </div>
+    </section>
   )
 }
 
@@ -172,15 +156,26 @@ export default function PropertyDetail() {
     <div className="min-h-screen bg-white text-gray-900">
       <Navbar />
 
-      <main className="pt-24 pb-16">
+      <main className="pt-20 md:pt-24 pb-16">
+        {/* Full width carousel on top */}
         <div className="mx-auto max-w-7xl px-6">
-          <div className="flex items-center justify-between gap-4">
+          {loading ? (
+            <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
+              <div className="aspect-[16/9] bg-gray-100 animate-pulse" />
+            </div>
+          ) : p ? (
+            <FullWidthCarousel images={p.images} />
+          ) : null}
+        </div>
+
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="flex items-center justify-between gap-4 mt-6">
             <Link to="/portafolio" className="text-sm hover:underline" style={{ color: BRAND.primary }}>← Volver al portafolio</Link>
           </div>
 
           {loading ? (
             <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="md:col-span-2 h-80 bg-gray-100 rounded-2xl animate-pulse" />
+              <div className="md:col-span-2 h-40 bg-gray-100 rounded-2xl animate-pulse" />
               <div className="space-y-3">
                 <div className="h-10 bg-gray-100 rounded animate-pulse" />
                 <div className="h-6 bg-gray-100 rounded animate-pulse" />
@@ -191,8 +186,7 @@ export default function PropertyDetail() {
           ) : p ? (
             <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="md:col-span-2">
-                <Gallery images={p.images} />
-                <div className="mt-8">
+                <div className="mt-2">
                   <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-gray-900">{p.title}</h1>
                   <p className="mt-1 text-gray-600">{p.location}</p>
 
@@ -213,10 +207,10 @@ export default function PropertyDetail() {
               </div>
 
               <aside className="md:col-span-1">
-                <div className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm sticky top-24">
+                <div className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm sticky top-24" id="contacto">
                   <h3 className="font-semibold text-gray-900">Solicitar información</h3>
                   <p className="text-sm text-gray-600 mt-1">Déjame tus datos y me pondré en contacto sobre esta propiedad.</p>
-                  <form onSubmit={submit} className="mt-4 space-y-4" id="contacto">
+                  <form onSubmit={submit} className="mt-4 space-y-4">
                     <div>
                       <label className="block text-sm text-gray-700">Nombre</label>
                       <input required value={form.name} onChange={e=>setForm({ ...form, name: e.target.value })} className="mt-1 w-full rounded-xl border border-black/10 px-3 py-2 focus:outline-none focus:ring-2" />
