@@ -2,20 +2,25 @@ import { useEffect, useState } from 'react'
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000'
 
+// Brand color: Petroleum Blue
+const BRAND = {
+  primary: '#0F4C5C', // petroleum blue
+}
+
 function Navbar() {
   const [open, setOpen] = useState(false)
   return (
     <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-white/70 bg-white/60 border-b border-black/5">
       <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
         <a href="#" className="flex items-center gap-3">
-          <div className="h-9 w-9 rounded-full bg-gradient-to-tr from-rose-500 to-amber-400 shadow-inner" />
-          <span className="font-semibold tracking-tight text-gray-900">Agente Inmobiliario Lima</span>
+          <div className="h-9 w-9 rounded-full" style={{ backgroundColor: BRAND.primary }} />
+          <span className="font-semibold tracking-tight text-gray-900">José Meneses</span>
         </a>
         <nav className="hidden md:flex items-center gap-8 text-sm text-gray-700">
           <a href="#propiedades" className="hover:text-gray-900">Propiedades</a>
           <a href="#servicios" className="hover:text-gray-900">Servicios</a>
           <a href="#nosotros" className="hover:text-gray-900">Nosotros</a>
-          <a href="#contacto" className="inline-flex items-center rounded-full bg-gray-900 text-white px-4 py-2 hover:bg-black transition">Contacto</a>
+          <a href="#contacto" className="inline-flex items-center rounded-full text-white px-4 py-2 transition" style={{ backgroundColor: BRAND.primary }}>Contacto</a>
         </nav>
         <button onClick={() => setOpen(!open)} className="md:hidden inline-flex items-center justify-center h-10 w-10 rounded-md border border-black/10">
           <span className="sr-only">Menu</span>
@@ -27,7 +32,7 @@ function Navbar() {
               <a href="#propiedades" onClick={() => setOpen(false)}>Propiedades</a>
               <a href="#servicios" onClick={() => setOpen(false)}>Servicios</a>
               <a href="#nosotros" onClick={() => setOpen(false)}>Nosotros</a>
-              <a href="#contacto" onClick={() => setOpen(false)} className="inline-flex items-center rounded-full bg-gray-900 text-white px-4 py-2">Contacto</a>
+              <a href="#contacto" onClick={() => setOpen(false)} className="inline-flex items-center rounded-full text-white px-4 py-2" style={{ backgroundColor: BRAND.primary }}>Contacto</a>
             </div>
           </div>
         )}
@@ -39,14 +44,15 @@ function Navbar() {
 function Hero() {
   return (
     <section className="relative pt-28 md:pt-32 overflow-hidden">
-      <div className="absolute inset-0 -z-10">
+      {/* Background image: ensure visible by removing negative z-index */}
+      <div className="absolute inset-0 z-0">
         <img src="https://images.unsplash.com/photo-1730063527034-f900a33a409c?ixid=M3w3OTkxMTl8MHwxfHNlYXJjaHwxfHxMaW1hJTIwU2t5bGluZXxlbnwwfDB8fHwxNzYzMTUxMTM0fDA&ixlib=rb-4.1.0&w=1600&auto=format&fit=crop&q=80" alt="Lima Skyline" className="h-full w-full object-cover"/>
-        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-white"/>
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.55), rgba(0,0,0,0.45), rgba(255,255,255,0.0))' }} />
       </div>
-      <div className="mx-auto max-w-7xl px-6">
+      <div className="relative mx-auto max-w-7xl px-6">
         <div className="max-w-xl md:max-w-2xl lg:max-w-3xl py-24 md:py-32">
           <div className="inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-gray-700 backdrop-blur">
-            <span className="h-2 w-2 rounded-full bg-emerald-500"/>
+            <span className="h-2 w-2 rounded-full" style={{ backgroundColor: BRAND.primary }}/>
             Premium Real Estate en Lima, Perú
           </div>
           <h1 className="mt-6 text-4xl md:text-6xl font-semibold tracking-tight text-white">
@@ -57,7 +63,7 @@ function Hero() {
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-3">
             <a href="#propiedades" className="inline-flex items-center justify-center rounded-full bg-white text-gray-900 px-5 py-3 font-medium hover:bg-white/90">Ver propiedades</a>
-            <a href="#contacto" className="inline-flex items-center justify-center rounded-full bg-gray-900 text-white px-5 py-3 font-medium hover:bg-black">Agendar una llamada</a>
+            <a href="#contacto" className="inline-flex items-center justify-center rounded-full text-white px-5 py-3 font-medium hover:opacity-90" style={{ backgroundColor: BRAND.primary }}>Agendar una llamada</a>
           </div>
         </div>
       </div>
@@ -74,7 +80,7 @@ function PropertyCard({ p }) {
       <div className="p-4">
         <div className="flex items-center justify-between">
           <h3 className="font-semibold text-gray-900">{p.title}</h3>
-          <span className="rounded-full bg-emerald-50 text-emerald-700 text-xs px-2 py-1">{p.type || 'Propiedad'}</span>
+          <span className="rounded-full text-xs px-2 py-1" style={{ backgroundColor: '#E6F4F7', color: BRAND.primary }}>{p.type || 'Propiedad'}</span>
         </div>
         <p className="text-sm text-gray-600 mt-1">{p.location}</p>
         <div className="mt-3 flex items-center justify-between">
@@ -113,7 +119,7 @@ function Featured() {
             <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-gray-900">Propiedades destacadas</h2>
             <p className="text-gray-600 mt-2">Selección curada de inmuebles premium</p>
           </div>
-          <a href="#" className="text-sm text-gray-700 hover:text-gray-900">Ver todas</a>
+          <a href="#" className="text-sm" style={{ color: BRAND.primary }}>Ver todas</a>
         </div>
 
         <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -165,7 +171,7 @@ function Services() {
         <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
           {services.map((s, i) => (
             <div key={i} className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm hover:shadow-md transition">
-              <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-rose-500 to-amber-400 text-white flex items-center justify-center">
+              <div className="h-10 w-10 rounded-full text-white flex items-center justify-center" style={{ backgroundColor: BRAND.primary }}>
                 {s.icon}
               </div>
               <h3 className="mt-4 font-semibold text-gray-900">{s.title}</h3>
@@ -182,16 +188,16 @@ function About() {
   return (
     <section id="nosotros" className="py-20 bg-gradient-to-b from-gray-50 to-white">
       <div className="mx-auto max-w-7xl px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-        <div>
-          <img className="rounded-2xl shadow-lg" src="https://images.unsplash.com/photo-1558222217-1024f51956f7?q=80&w=1600&auto=format&fit=crop" alt="Agente" />
+        <div className="relative z-0">
+          <img className="rounded-2xl shadow-lg block w-full h-auto" src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=1600&auto=format&fit=crop" alt="Asesor inmobiliario" />
         </div>
         <div>
           <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-gray-900">Tu aliado en el mercado premium de Lima</h2>
           <p className="mt-4 text-gray-600">Más de 8 años asesorando a clientes locales e internacionales en la compra, venta y alquiler de propiedades en los distritos más exclusivos de Lima.</p>
           <ul className="mt-6 space-y-3 text-gray-700">
-            <li className="flex items-center gap-3"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500"/> Atención personalizada 1 a 1</li>
-            <li className="flex items-center gap-3"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500"/> Enfoque boutique con red de contactos</li>
-            <li className="flex items-center gap-3"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500"/> Marketing de alto impacto y home staging</li>
+            <li className="flex items-center gap-3"><span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: BRAND.primary }}/> Atención personalizada 1 a 1</li>
+            <li className="flex items-center gap-3"><span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: BRAND.primary }}/> Enfoque boutique con red de contactos</li>
+            <li className="flex items-center gap-3"><span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: BRAND.primary }}/> Marketing de alto impacto y home staging</li>
           </ul>
         </div>
       </div>
@@ -212,7 +218,7 @@ function Contact() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form)
       })
-      const data = await res.json()
+      await res.json()
       if (res.ok) setStatus('success')
       else setStatus('error')
     } catch (e) {
@@ -230,24 +236,24 @@ function Contact() {
             <form onSubmit={submit} className="space-y-4">
               <div>
                 <label className="block text-sm text-gray-700">Nombre</label>
-                <input required value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="mt-1 w-full rounded-xl border border-black/10 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-200"/>
+                <input required value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="mt-1 w-full rounded-xl border border-black/10 px-3 py-2 focus:outline-none focus:ring-2" style={{ boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.02)' }} />
               </div>
               <div>
                 <label className="block text-sm text-gray-700">Email</label>
-                <input type="email" required value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} className="mt-1 w-full rounded-xl border border-black/10 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-200"/>
+                <input type="email" required value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} className="mt-1 w-full rounded-xl border border-black/10 px-3 py-2 focus:outline-none focus:ring-2" />
               </div>
               <div>
                 <label className="block text-sm text-gray-700">Teléfono</label>
-                <input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} className="mt-1 w-full rounded-xl border border-black/10 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-200"/>
+                <input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} className="mt-1 w-full rounded-xl border border-black/10 px-3 py-2 focus:outline-none focus:ring-2" />
               </div>
               <div>
                 <label className="block text-sm text-gray-700">Mensaje</label>
-                <textarea required rows="4" value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} className="mt-1 w-full rounded-xl border border-black/10 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-200"/>
+                <textarea required rows="4" value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} className="mt-1 w-full rounded-xl border border-black/10 px-3 py-2 focus:outline-none focus:ring-2" />
               </div>
-              <button disabled={status==='loading'} className="inline-flex items-center justify-center rounded-full bg-gray-900 text-white px-5 py-3 font-medium hover:bg-black disabled:opacity-60">
+              <button disabled={status==='loading'} className="inline-flex items-center justify-center rounded-full text-white px-5 py-3 font-medium disabled:opacity-60 hover:opacity-90" style={{ backgroundColor: BRAND.primary }}>
                 {status==='loading' ? 'Enviando...' : 'Enviar mensaje'}
               </button>
-              {status==='success' && <p className="text-emerald-600 text-sm">¡Gracias! Me pondré en contacto muy pronto.</p>}
+              {status==='success' && <p className="text-sm" style={{ color: BRAND.primary }}>¡Gracias! Me pondré en contacto muy pronto.</p>}
               {status==='error' && <p className="text-rose-600 text-sm">Hubo un problema. Inténtalo nuevamente.</p>}
             </form>
           </div>
@@ -271,7 +277,7 @@ export default function App() {
       <Contact />
       <footer className="py-10 border-t border-black/5">
         <div className="mx-auto max-w-7xl px-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-gray-600">© {new Date().getFullYear()} Agente Inmobiliario Lima. Todos los derechos reservados.</p>
+          <p className="text-sm text-gray-600">© {new Date().getFullYear()} José Meneses. Todos los derechos reservados.</p>
           <div className="flex items-center gap-4 text-sm text-gray-700">
             <a href="#" className="hover:text-gray-900">Instagram</a>
             <a href="#" className="hover:text-gray-900">LinkedIn</a>
