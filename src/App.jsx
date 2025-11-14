@@ -1,11 +1,7 @@
 import { useEffect, useState } from 'react'
+import { BRAND } from './lib/brand'
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000'
-
-// Brand color: Petroleum Blue
-const BRAND = {
-  primary: '#0F4C5C', // petroleum blue
-}
 
 function Navbar() {
   const [open, setOpen] = useState(false)
@@ -14,12 +10,13 @@ function Navbar() {
       <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
         <a href="#" className="flex items-center gap-3">
           <div className="h-9 w-9 rounded-full" style={{ backgroundColor: BRAND.primary }} />
-          <span className="font-semibold tracking-tight text-gray-900">José Meneses</span>
+          <span className="font-semibold tracking-tight text-gray-900">{BRAND.name}</span>
         </a>
         <nav className="hidden md:flex items-center gap-8 text-sm text-gray-700">
           <a href="#propiedades" className="hover:text-gray-900">Propiedades</a>
           <a href="#servicios" className="hover:text-gray-900">Servicios</a>
           <a href="#nosotros" className="hover:text-gray-900">Nosotros</a>
+          <a href="/portafolio" className="hover:text-gray-900">Portafolio</a>
           <a href="#contacto" className="inline-flex items-center rounded-full text-white px-4 py-2 transition" style={{ backgroundColor: BRAND.primary }}>Contacto</a>
         </nav>
         <button onClick={() => setOpen(!open)} className="md:hidden inline-flex items-center justify-center h-10 w-10 rounded-md border border-black/10">
@@ -32,6 +29,7 @@ function Navbar() {
               <a href="#propiedades" onClick={() => setOpen(false)}>Propiedades</a>
               <a href="#servicios" onClick={() => setOpen(false)}>Servicios</a>
               <a href="#nosotros" onClick={() => setOpen(false)}>Nosotros</a>
+              <a href="/portafolio" onClick={() => setOpen(false)}>Portafolio</a>
               <a href="#contacto" onClick={() => setOpen(false)} className="inline-flex items-center rounded-full text-white px-4 py-2" style={{ backgroundColor: BRAND.primary }}>Contacto</a>
             </div>
           </div>
@@ -44,7 +42,6 @@ function Navbar() {
 function Hero() {
   return (
     <section className="relative pt-28 md:pt-32 overflow-hidden">
-      {/* Background image: ensure visible by removing negative z-index */}
       <div className="absolute inset-0 z-0">
         <img src="https://images.unsplash.com/photo-1730063527034-f900a33a409c?ixid=M3w3OTkxMTl8MHwxfHNlYXJjaHwxfHxMaW1hJTIwU2t5bGluZXxlbnwwfDB8fHwxNzYzMTUxMTM0fDA&ixlib=rb-4.1.0&w=1600&auto=format&fit=crop&q=80" alt="Lima Skyline" className="h-full w-full object-cover"/>
         <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.55), rgba(0,0,0,0.45), rgba(255,255,255,0.0))' }} />
@@ -119,7 +116,7 @@ function Featured() {
             <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-gray-900">Propiedades destacadas</h2>
             <p className="text-gray-600 mt-2">Selección curada de inmuebles premium</p>
           </div>
-          <a href="#" className="text-sm" style={{ color: BRAND.primary }}>Ver todas</a>
+          <a href="/portafolio" className="text-sm" style={{ color: BRAND.primary }}>Ver todas</a>
         </div>
 
         <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -277,7 +274,7 @@ export default function App() {
       <Contact />
       <footer className="py-10 border-t border-black/5">
         <div className="mx-auto max-w-7xl px-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-gray-600">© {new Date().getFullYear()} José Meneses. Todos los derechos reservados.</p>
+          <p className="text-sm text-gray-600">© {new Date().getFullYear()} {BRAND.name}. Todos los derechos reservados.</p>
           <div className="flex items-center gap-4 text-sm text-gray-700">
             <a href="#" className="hover:text-gray-900">Instagram</a>
             <a href="#" className="hover:text-gray-900">LinkedIn</a>
