@@ -49,59 +49,65 @@ function FullWidthCarousel({ images = [] }) {
     }
   }, [isHovering, list.length])
 
-  // full-bleed container
+  // calcular 5 miniaturas extra (excluyendo la principal actual)
+  const thumbCount = Math.min(5, Math.max(0, list.length - 1))
+  const thumbs = Array.from({ length: thumbCount }, (_, k) => (index + k + 1) % list.length)
+
   return (
     <section
       className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen select-none"
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
-      <div className="relative">
-        {/* Main image */}
-        <div className="relative aspect-[16/9] sm:aspect-[21/9] md:aspect-[16/6] bg-black">
+      {/* Main carousel (full width) con desvanecido */}
+      <div className="relative aspect-[16/9] sm:aspect-[21/9] md:aspect-[16/6] bg-black overflow-hidden">
+        {list.map((src, i) => (
           <img
-            src={list[index]}
-            alt={`Imagen ${index + 1}`}
-            className="h-full w-full object-cover"
+            key={`${src}-${i}`}
+            src={src}
+            alt={`Imagen ${i + 1}`}
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-out ${i === index ? 'opacity-100' : 'opacity-0'}`}
           />
+        ))}
 
-          {/* Controls */}
-          <button
-            aria-label="Anterior"
-            onClick={prev}
-            className="absolute left-3 top-1/2 -translate-y-1/2 h-10 w-10 md:h-12 md:w-12 rounded-full bg-white/80 hover:bg-white shadow flex items-center justify-center"
-          >
-            ‹
-          </button>
-          <button
-            aria-label="Siguiente"
-            onClick={next}
-            className="absolute right-3 top-1/2 -translate-y-1/2 h-10 w-10 md:h-12 md:w-12 rounded-full bg-white/80 hover:bg-white shadow flex items-center justify-center"
-          >
-            ›
-          </button>
-
-          {/* Counter */}
-          <div className="absolute bottom-3 right-3 text-xs md:text-sm px-2.5 py-1.5 rounded-full bg-black/60 text-white">
-            {index + 1} / {list.length}
-          </div>
-        </div>
+        {/* Controls */}
+        {list.length > 1 && (
+          <>
+            <button
+              aria-label="Anterior"
+              onClick={prev}
+              className="absolute left-3 top-1/2 -translate-y-1/2 h-10 w-10 md:h-12 md:w-12 rounded-full bg-white/80 hover:bg-white shadow flex items-center justify-center"
+            >
+              ‹
+            </button>
+            <button
+              aria-label="Siguiente"
+              onClick={next}
+              className="absolute right-3 top-1/2 -translate-y-1/2 h-10 w-10 md:h-12 md:w-12 rounded-full bg-white/80 hover:bg-white shadow flex items-center justify-center"
+            >
+              ›
+            </button>
+            <div className="absolute bottom-3 right-3 text-xs md:text-sm px-2.5 py-1.5 rounded-full bg-black/60 text-white">
+              {index + 1} / {list.length}
+            </div>
+          </>
+        )}
       </div>
 
-      {/* Thumbnails row */}
-      {list.length > 1 && (
+      {/* Thumbnails row: exactamente hasta 5 extras */}
+      {thumbs.length > 0 && (
         <div className="mx-auto max-w-7xl px-6">
           <div className="-mt-4 md:-mt-6" />
-          <div className="relative flex gap-2 overflow-x-auto pb-2">
-            {list.map((src, i) => (
+          <div className="relative flex gap-2 pb-2 justify-center md:justify-start">
+            {thumbs.map((ti, k) => (
               <button
-                key={`thumb-${i}`}
-                onClick={() => setIndex(i)}
-                className={`relative h-16 w-24 md:h-20 md:w-32 rounded-lg overflow-hidden border transition-all ${i===index ? 'border-[3px] scale-[0.98]' : 'border-black/10 hover:opacity-90'}`}
-                style={i===index ? { borderColor: BRAND.primary } : {}}
-                aria-label={`Ir a imagen ${i+1}`}
+                key={`thumb-${ti}`}
+                onClick={() => setIndex(ti)}
+                className={`relative h-16 w-24 md:h-20 md:w-32 rounded-lg overflow-hidden border transition-all ${ti===index ? 'border-[3px] scale-[0.98]' : 'border-black/10 hover:opacity-90'}`}
+                style={ti===index ? { borderColor: BRAND.primary } : {}}
+                aria-label={`Ir a imagen ${ti+1}`}
               >
-                <img src={src} alt={`Miniatura ${i+1}`} className="h-full w-full object-cover" />
+                <img src={list[ti]} alt={`Miniatura ${ti+1}`} className="h-full w-full object-cover" />
               </button>
             ))}
           </div>
