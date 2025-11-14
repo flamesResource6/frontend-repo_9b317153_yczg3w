@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { BRAND } from '../lib/brand'
+import { uploadImages } from '../lib/uploader'
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000'
 
@@ -158,6 +159,9 @@ function Inquiries() {
 
 function ImageListEditor({ images, onChange }) {
   const [input, setInput] = useState('')
+  const [dragOver, setDragOver] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const fileRef = useRef(null)
 
   const add = () => {
     if (!input.trim()) return
@@ -171,12 +175,46 @@ function ImageListEditor({ images, onChange }) {
     onChange(next)
   }
 
+  const onFiles = async (fileList) => {
+    if (!fileList || fileList.length === 0) return
+    try {
+      setUploading(true)
+      const urls = await uploadImages(Array.from(fileList), BACKEND_URL)
+      onChange([...(images || []), ...urls])
+    } catch (e) {
+      alert('No se pudieron subir algunas imágenes')
+      console.error(e)
+    } finally {
+      setUploading(false)
+    }
+  }
+
   return (
     <div>
       <div className="flex gap-2">
         <input value={input} onChange={e=>setInput(e.target.value)} placeholder="URL de imagen" className="flex-1 rounded-xl border border-black/10 px-3 py-2 focus:outline-none focus:ring-2" />
         <button type="button" onClick={add} className="rounded-xl px-3 py-2 text-white" style={{ backgroundColor: BRAND.primary }}>Agregar</button>
+        <input ref={fileRef} type="file" accept="image/*" multiple className="hidden" onChange={(e)=>onFiles(e.target.files)} />
+        <button type="button" onClick={()=>fileRef.current?.click()} className="rounded-xl px-3 py-2 border">Subir</button>
       </div>
+
+      <div
+        className={`mt-3 rounded-xl border-2 ${dragOver ? 'border-dashed border-[--brand]' : 'border-black/10'} bg-gray-50 p-4 text-center transition`}
+        onDragOver={(e)=>{e.preventDefault(); setDragOver(true)}}
+        onDragLeave={()=>setDragOver(false)}
+        onDrop={(e)=>{e.preventDefault(); setDragOver(false); onFiles(e.dataTransfer.files)}}
+        style={{ ['--brand']: BRAND.primary }}
+      >
+        {uploading ? (
+          <div className="text-sm text-gray-600">Subiendo imágenes…</div>
+        ) : (
+          <>
+            <div className="text-sm text-gray-700">Arrastra y suelta imágenes aquí, o usa el botón "Subir".</div>
+            <div className="text-xs text-gray-500 mt-1">Formatos comunes: JPG, PNG, WEBP</div>
+          </>
+        )}
+      </div>
+
       <div className="mt-3 grid grid-cols-2 md:grid-cols-3 gap-3">
         {(images || []).map((src, idx) => (
           <div key={idx} className="relative group">
@@ -319,10 +357,6 @@ function PropertiesManager() {
             <div className="flex items-center gap-2">
               <input id="featured" type="checkbox" checked={!!form.featured} onChange={e=>setForm({ ...form, featured: e.target.checked })} className="rounded" />
               <label htmlFor="featured" className="text-sm text-gray-700">Destacada</label>
-            </div>
-            <div>
-              <label className="block text-sm text-gray-700">Descripción</label>
-              <textarea rows="4" value={form.description} onChange={e=>setForm({ ...form, description: e.target.value })} className="mt-1 w-full rounded-xl border border-black/10 px-3 py-2 focus:outline-none focus:ring-2" />
             </div>
             <div>
               <label className="block text-sm text-gray-700 mb-1">Imágenes</label>
