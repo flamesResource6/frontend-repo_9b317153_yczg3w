@@ -73,7 +73,7 @@ function Filters({ onChange }) {
 
 function PropertyCard({ p }) {
   return (
-    <a href="#" className="group rounded-2xl overflow-hidden bg-white shadow-sm border border-black/5 hover:shadow-lg transition block">
+    <a href={`/propiedad/${p.id}`} className="group rounded-2xl overflow-hidden bg-white shadow-sm border border-black/5 hover:shadow-lg transition block">
       <div className="aspect-[16/10] overflow-hidden">
         <img src={p.images?.[0] || 'https://images.unsplash.com/photo-1505692794403-34d4982dc1f3?q=80&w=1600&auto=format&fit=crop'} alt={p.title} className="h-full w-full object-cover group-hover:scale-[1.03] transition"/>
       </div>
